@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Management System</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        .btn {
+            background: linear-gradient(135deg, #f5a623, #ff007f);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: background-color 0.3s ease-in-out, transform 0.2s ease;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, #ff007f, #f5a623);
+            transform: scale(1.05);
+        }
+
+        .input-field {
+            background-color: #f9f9f9;
+            border-color: #ddd;
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            border-color: #ff007f;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(255, 0, 127, 0.3);
+        }
+
+        /* 3D human figures animation */
+        .human-animation {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .human {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-color: #3498db;
+            border-radius: 50%;
+            animation: moveHuman 8s infinite linear;
+        }
+
+        .human:nth-child(1) {
+            top: 10%;
+            animation-delay: 0s;
+        }
+
+        .human:nth-child(2) {
+            top: 20%;
+            animation-delay: 2s;
+        }
+
+        .human:nth-child(3) {
+            top: 30%;
+            animation-delay: 4s;
+        }
+
+        .human:nth-child(4) {
+            top: 40%;
+            animation-delay: 6s;
+        }
+
+        @keyframes moveHuman {
+            0% {
+                transform: translateX(-100vw) perspective(500px) rotateY(0deg);
+            }
+            50% {
+                transform: translateX(100vw) perspective(500px) rotateY(180deg);
+            }
+            100% {
+                transform: translateX(-100vw) perspective(500px) rotateY(0deg);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-inter">
+
+    <div class="container mx-auto p-6 bg-white rounded-xl shadow-lg mt-8 max-w-xl relative">
+        <!-- Background animation of humans -->
+        <div class="human-animation">
+            <div class="human"></div>
+            <div class="human"></div>
+            <div class="human"></div>
+            <div class="human"></div>
+        </div>
+
+        <h1 class="text-4xl text-center text-gray-800 font-semibold mb-6">Inventory Management System</h1>
+
+        <h2 class="text-2xl text-gray-600 mb-6 text-center">User Management</h2>
+
+        <!-- Role Selection Section -->
+        <div class="flex flex-col items-center gap-6 mb-6">
+            <input type="text" id="username" class="input-field p-4 rounded-md text-lg w-80" placeholder="Enter Username">
+            <input type="password" id="password" class="input-field p-4 rounded-md text-lg w-80" placeholder="Enter Password">
+            <select id="roleSelector" onchange="showFeatures()" class="input-field p-4 rounded-md text-lg w-80">
+                <option value="">Select Role</option>
+                <option value="ADMIN">Admin</option>
+                <option value="MANAGER">Manager</option>
+                <option value="STAFF">Staff</option>
+            </select>
+        </div>
+
+        <!-- Features Section -->
+        <div id="adminFeatures" class="hidden bg-gray-100 p-6 rounded-lg shadow-md">
+            <h3 class="text-xl text-purple-600 font-bold mb-4">Admin: Manage System</h3>
+            <button class="btn w-full mb-3">Manage Products</button>
+            <button class="btn w-full mb-3">Manage Users</button>
+            <button class="btn w-full">Manage Suppliers</button>
+        </div>
+
+        <div id="managerFeatures" class="hidden bg-gray-100 p-6 rounded-lg shadow-md">
+            <h3 class="text-xl text-purple-600 font-bold mb-4">Manager: Manage Products</h3>
+            <button class="btn w-full mb-3">Add Product</button>
+            <button class="btn w-full mb-3">Edit Product</button>
+            <button class="btn w-full">Delete Product</button>
+        </div>
+
+        <div id="staffFeatures" class="hidden bg-gray-100 p-6 rounded-lg shadow-md">
+            <h3 class="text-xl text-purple-600 font-bold mb-4">Staff: Manage Inventory</h3>
+            <button class="btn w-full">Update Inventory</button>
+        </div>
+    </div>
+
+    <script>
+        function showFeatures() {
+            // Hide all feature sections
+            document.getElementById('adminFeatures').classList.add('hidden');
+            document.getElementById('managerFeatures').classList.add('hidden');
+            document.getElementById('staffFeatures').classList.add('hidden');
+
+            // Show the selected role's features
+            const selectedRole = document.getElementById('roleSelector').value;
+            if (selectedRole === 'ADMIN') {
+                document.getElementById('adminFeatures').classList.remove('hidden');
+            } else if (selectedRole === 'MANAGER') {
+                document.getElementById('managerFeatures').classList.remove('hidden');
+            } else if (selectedRole === 'STAFF') {
+                document.getElementById('staffFeatures').classList.remove('hidden');
+            }
+        }
+    </script>
+
+</body>
+</html>
