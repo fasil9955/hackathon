@@ -1,77 +1,85 @@
-// Imports
+const db = require('../db'); // Assuming your DB connection is in the db.js file
 
-// Verify Token Middleware
-const verifyToken = (req, res, next) => {
-    const token = req.headers['authorization'];
-    if (!token) return res.status(403).send('You do not have access to this page.');
-
-    jwt.verify(token, process.env.JWT_SECRET || 'secretKey', (err, decoded) => {
-        if (err) return res.status(401).send('Invalid token.');
-        req.user = decoded;
-        next();
-    });
-};
-
-// Check Admin Middleware
-const isAdmin = (req, res, next) => {
-    if (req.user.role !== 'admin') {
-        return res.status(403).send('Access denied. Admins only can access.');
-    }
-    next();
-};
-
-// Get all suppliers
-app.get('/suppliers', (req, res) => {
+// Fetch all suppliers
+exports.getAllSuppliers = (req, res) => {
     const query = 'SELECT * FROM suppliers';
     db.query(query, (err, results) => {
         if (err) {
-            res.status(500).send('Error fetching suppliers.');
-        } else {
-            res.json(results);
+            return res.status(500).send('Error fetching suppliers.');
         }
+        res.json(results);
     });
-});
+};
 
-// Add a supplier
-app.post('/suppliers', verifyToken, isAdmin, (req, res) => {
-    const { name, contact_email, phone_number, address } = req.body;
-    const query = `INSERT INTO suppliers (name, contact_email, phone_number, address) 
-                   VALUES (?, ?, ?, ?)`;
-    db.query(query, [name, contact_email, phone_number, address], (err) => {
+// Add a new supplier
+exports.addSupplier = (req, res) => {
+    const { supplier_name, contact_email, phone_number, address, user_id } = req.body;
+
+    // Check if supplier with the same email already exists
+    const checkQuery = 'SELECT * FROM suppliers WHERE contact_email = ?';
+    db.query(checkQuery, [contact_email], (err, existingSupplier) => {
         if (err) {
-            res.status(500).send('Error adding supplier.');
-        } else {
+            return res.status(500).send('Error checking supplier existence.');
+        }
+
+        if (existingSupplier.length > 0) {
+            return res.status(400).send('Supplier with this email already exists.');
+        }
+
+        // Insert new supplier
+        const query = `
+            INSERT INTO suppliers (supplier_name, contact_email, phone_number, address, user_id)
+            VALUES (?, ?, ?, ?, ?)
+        `;
+        db.query(query, [supplier_name, contact_email, phone_number, address, user_id], (err) => {
+            if (err) {
+                return res.status(500).send('Error adding supplier.');
+            }
             res.send('Supplier added successfully.');
-        }
+        });
     });
-});
+};
 
-// Update a supplier
-app.put('/suppliers/:id', verifyToken, isAdmin, (req, res) => {
+// Update a supplier by ID
+exports.updateSupplier = (req, res) => {
     const { id } = req.params;
-    const { name, contact_email, phone_number, address } = req.body;
-    const query = `UPDATE suppliers 
-                   SET name = ?, contact_email = ?, phone_number = ?, address = ? 
-                   WHERE supplier_id = ?`;
-    db.query(query, [name, contact_email, phone_number, address, id], (err) => {
+    const { supplier_name, contact_email, phone_number, address } = req.body;
+
+    // Check if supplier with the same email exists but not the current supplier
+    const checkQuery = 'SELECT * FROM suppliers WHERE contact_email = ? AND supplier_id != ?';
+    db.query(checkQuery, [contact_email, id], (err, existingSupplier) => {
         if (err) {
-            res.status(500).send('Error updating supplier.');
-        } else {
-            res.send('Supplier updated successfully.');
+            return res.status(500).send('Error checking supplier existence.');
         }
-    });
-});
 
-// Delete a supplier
-app.delete('/suppliers/:id', verifyToken, isAdmin, (req, res) => {
+        if (existingSupplier.length > 0) {
+            return res.status(400).send('Supplier with this email already exists.');
+        }
+
+        // Update supplier details
+        const query = `
+            UPDATE suppliers
+            SET supplier_name = ?, contact_email = ?, phone_number = ?, address = ?
+            WHERE supplier_id = ?
+        `;
+        db.query(query, [supplier_name, contact_email, phone_number, address, id], (err) => {
+            if (err) {
+                return res.status(500).send('Error updating supplier.');
+            }
+            res.send('Supplier updated successfully.');
+        });
+    });
+};
+
+// Delete a supplier by ID
+exports.deleteSupplier = (req, res) => {
     const { id } = req.params;
-    const query = `DELETE FROM suppliers WHERE supplier_id = ?`;
+
+    const query = 'DELETE FROM suppliers WHERE supplier_id = ?';
     db.query(query, [id], (err) => {
         if (err) {
-            res.status(500).send('Error deleting supplier.');
-        } else {
-            res.send('Supplier deleted successfully.');
+            return res.status(500).send('Error deleting supplier.');
         }
+        res.send('Supplier deleted successfully.');
     });
-});
-
+};
