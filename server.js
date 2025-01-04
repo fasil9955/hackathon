@@ -66,12 +66,10 @@ const employeeAuth = (req, res, next) => {
   });
 };
 
-app.get("/", (req, res) => {
-  res.send("Hello");
-});
 
-app.post("/signUp", async (req, res) => {
-  const { username, password, role, user_id } = req.body;
+
+app.post("users/register", async (req, res) => {
+  const { username, password, role, email } = req.body;
   console.log(req.body);
   console.log(password, "password");
   const pass = await bcrypt.hash(password, 7);
@@ -79,7 +77,7 @@ app.post("/signUp", async (req, res) => {
     username: username,
     password: pass,
     role: role,
-    user_id: user_id,
+    email: email,
   };
   users.insertOne(data, async (err, data) => {
     if (err) {
