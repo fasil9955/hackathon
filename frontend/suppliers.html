@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suppliers Inventory Management System</title>
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header styles */
+        header {
+            background-color: #3498db;
+            color: #fff;
+            padding: 1rem;
+            text-align: center;
+        }
+        header h1 {
+            margin-bottom: 10px;
+        }
+
+        /* Navigation styles */
+        nav {
+            background-color: #2980b9;
+            padding: 10px;
+        }
+        nav ul {
+            list-style-type: none;
+            display: flex;
+            justify-content: center;
+        }
+        nav ul li {
+            margin: 0 10px;
+        }
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        nav ul li a:hover {
+            background-color: #1c638e;
+        }
+
+        /* Main content styles */
+        main {
+            background-color: #fff;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        /* Table styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #3498db;
+            color: #fff;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #e6e6e6;
+        }
+
+        /* Form styles */
+        form {
+            display: grid;
+            gap: 15px;
+        }
+        label {
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="email"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+            }
+            nav ul li {
+                margin: 5px 0;
+            }
+            table {
+                font-size: 14px;
+            }
+            th, td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Suppliers Management System</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="#view-suppliers">View Suppliers</a></li>
+            <li><a href="#add-supplier">Add Supplier</a></li>
+            <li><a href="#update-supplier">Update Supplier</a></li>
+        </ul>
+    </nav>
+    <div class="container">
+        <main>
+            <section id="view-suppliers">
+                <h2>View Suppliers</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Product ID</th>
+                            <th>Supplier ID</th>
+                            <th>Name</th>
+                            <th>Contact</th>
+                            <th>Address</th>
+                            <th>Email</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>P001</td>
+                            <td>S001</td>
+                            <td>ABC Suppliers</td>
+                            <td>John Doe</td>
+                            <td>123 Main St, City, Country</td>
+                            <td>john@abcsuppliers.com</td>
+                        </tr>
+                        <tr>
+                            <td>P002</td>
+                            <td>S002</td>
+                            <td>XYZ Corporation</td>
+                            <td>Jane Smith</td>
+                            <td>456 Oak Ave, Town, Country</td>
+                            <td>jane@xyzcorp.com</td>
+                        </tr>
+                        <!-- Add more rows as needed -->
+                    </tbody>
+                </table>
+            </section>
+            <section id="add-supplier">
+                <h2>Add Supplier</h2>
+                <form>
+                    <label for="product-id">Product ID:</label>
+                    <input type="text" id="product-id" name="product-id" required>
+
+                    <label for="supplier-id">Supplier ID:</label>
+                    <input type="text" id="supplier-id" name="supplier-id" required>
+
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="name" required>
+
+                    <label for="contact">Contact:</label>
+                    <input type="text" id="contact" name="contact" required>
+
+                    <label for="address">Address:</label>
+                    <input type="text" id="address" name="address" required>
+
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+
+                    <button type="submit">Add Supplier</button>
+                </form>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
