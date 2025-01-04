@@ -1,72 +1,76 @@
-const Supplier = require('../models/supplierModel');
 
-// Add a new supplier
-exports.addSupplier = async (req, res) => {
-  try {
-    const { name, email, phone } = req.body;
-    if (!name || !email || !phone) {
-      return res.status(400).json({ message: 'All fields are required' });
-    }
 
-    const newSupplier = await Supplier.add({ name, email, phone });
-    res.status(201).json({ message: 'Supplier added successfully', supplier: newSupplier });
-  } catch (error) {
-    res.status(500).json({ message: 'Failed to add supplier', error: error.message });
-  }
+// Verify Token Middleware
+const verifyToken = (req, res, next) => {
+    const token = req.headers['authorization'];
+    if (!token) return res.status(403).send('You do not have access to this page.');
+
+    jwt.verify(token, process.env.JWT_SECRET || 'secretKey', (err, decoded) => {
+        if (err) return res.status(401).send('Invalid token.');
+        req.user = decoded;
+        next();
+    });
 };
 
+// Check Admin Middleware
+const isAdmin = (req, res, next) => {
+    if (req.user.role !== 'admin') {
+        return res.status(403).send('Access denied. Admins only can access.');
+    }
+    next();
+};
 
+// Get all suppliers
+app.get('/suppliers', (req, res) => {
+    const query = 'SELECT * FROM Suppliers';
+    db.query(query, (err, results) => {
+        if (err) {
+            res.status(500).send('Error fetching suppliers.');
+        } else {
+            res.json(results);
+        }
+    });
+});
 
-// Edit a supplier by ID
-exports.editSupplier = async (req, res) => {
-  try {
+// Add a supplier
+app.post('/suppliers', verifyToken, isAdmin, (req, res) => {
+    const { supplier_id, supplier_name, email, phone, address, user_id } = req.body;
+    const query = `INSERT INTO Suppliers (supplier_id, supplier_name, email, phone, address, user_id) 
+                   VALUES (?, ?, ?, ?, ?, ?)`;
+    db.query(query, [supplier_id, supplier_name, email, phone, address, user_id], (err) => {
+        if (err) {
+            res.status(500).send('Error adding supplier.');
+        } else {
+            res.send('Supplier added successfully.');
+        }
+    });
+});
+
+// Update a supplier
+app.put('/suppliers/:id', verifyToken, isAdmin, (req, res) => {
     const { id } = req.params;
-    const { name, email, phone } = req.body;
+    const { supplier_name, email, phone, address } = req.body;
+    const query = `UPDATE Suppliers SET supplier_name = ?, email = ?, phone = ?, address = ? WHERE supplier_id = ?`;
+    db.query(query, [supplier_name, email, phone, address, id], (err) => {
+        if (err) {
+            res.status(500).send('Error updating supplier.');
+        } else {
+            res.send('Supplier updated successfully.');
+        }
+    });
+});
 
-    if (!name || !email || !phone) {
-      return res.status(400).json({ message: 'All fields are required' });
-    }
-
-    const updatedSupplier = await Supplier.edit(id, { name, email, phone });
-    res.status(200).json({ message: 'Supplier updated successfully', supplier: updatedSupplier });
-  } catch (error) {
-    res.status(500).json({ message: 'Failed to update supplier', error: error.message });
-  }
-};
-
-// Delete a supplier by ID
-exports.deleteSupplier = async (req, res) => {
-  try {
+// Delete a supplier
+app.delete('/suppliers/:id', verifyToken, isAdmin, (req, res) => {
     const { id } = req.params;
-    await Supplier.delete(id);
-    res.status(200).json({ message: 'Supplier deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ message: 'Failed to delete supplier', error: error.message });
-  }
-};
+    const query = `DELETE FROM Suppliers WHERE supplier_id = ?`;
+    db.query(query, [id], (err) => {
+        if (err) {
+            res.status(500).send('Error deleting supplier.');
+        } else {
+            res.send('Supplier deleted successfully.');
+        }
+    });
+});
 
-// Fetch all suppliers
-exports.viewAllSuppliers = async (req, res) => {
-    try {
-      const suppliers = await Supplier.getAll();
-      res.status(200).json({ message: 'Suppliers fetched successfully', suppliers });
-    } catch (error) {
-      res.status(500).json({ message: 'Failed to fetch suppliers', error: error.message });
-    }
-  };
-  
-  // Fetch a supplier by ID
-  exports.viewSupplierById = async (req, res) => {
-    try {
-      const { id } = req.params;
-      const supplier = await Supplier.getById(id);
-  
-      if (!supplier) {
-        return res.status(404).json({ message: 'Supplier not found' });
-      }
-  
-      res.status(200).json({ message: 'Supplier fetched successfully', supplier });
-    } catch (error) {
-      res.status(500).json({ message: 'Failed to fetch supplier', error: error.message });
-    }
-  };
+
