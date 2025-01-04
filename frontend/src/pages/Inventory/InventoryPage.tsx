@@ -1,7 +1,12 @@
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
+// import { useEffect } from "react";
+import Navbar from "../../components/Navbar";
+
+// import { useNavigate } from "react-router-dom";
 
 export default function DemoPage() {
+  // const navigate = useNavigate();
   const data = [
     {
       id: "1",
@@ -45,8 +50,16 @@ export default function DemoPage() {
     },
   ];
 
+  // useEffect(() => {
+  //   if (!isAuthenticated) {
+  //     navigate("/login");
+  //   }
+  // }, [isAuthenticated, navigate]);
+
   return (
     <div className="container mx-auto py-10">
+      <Navbar />
+      <h1 className="text-3xl font-bold mb-5">Inventory</h1>
       <DataTable columns={columns} data={data} />
     </div>
   );
