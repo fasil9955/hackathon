@@ -1,4 +1,4 @@
-
+// Imports
 
 // Verify Token Middleware
 const verifyToken = (req, res, next) => {
@@ -22,7 +22,7 @@ const isAdmin = (req, res, next) => {
 
 // Get all suppliers
 app.get('/suppliers', (req, res) => {
-    const query = 'SELECT * FROM Suppliers';
+    const query = 'SELECT * FROM suppliers';
     db.query(query, (err, results) => {
         if (err) {
             res.status(500).send('Error fetching suppliers.');
@@ -34,10 +34,10 @@ app.get('/suppliers', (req, res) => {
 
 // Add a supplier
 app.post('/suppliers', verifyToken, isAdmin, (req, res) => {
-    const { supplier_id, supplier_name, email, phone, address, user_id } = req.body;
-    const query = `INSERT INTO Suppliers (supplier_id, supplier_name, email, phone, address, user_id) 
-                   VALUES (?, ?, ?, ?, ?, ?)`;
-    db.query(query, [supplier_id, supplier_name, email, phone, address, user_id], (err) => {
+    const { name, contact_email, phone_number, address } = req.body;
+    const query = `INSERT INTO suppliers (name, contact_email, phone_number, address) 
+                   VALUES (?, ?, ?, ?)`;
+    db.query(query, [name, contact_email, phone_number, address], (err) => {
         if (err) {
             res.status(500).send('Error adding supplier.');
         } else {
@@ -49,9 +49,11 @@ app.post('/suppliers', verifyToken, isAdmin, (req, res) => {
 // Update a supplier
 app.put('/suppliers/:id', verifyToken, isAdmin, (req, res) => {
     const { id } = req.params;
-    const { supplier_name, email, phone, address } = req.body;
-    const query = `UPDATE Suppliers SET supplier_name = ?, email = ?, phone = ?, address = ? WHERE supplier_id = ?`;
-    db.query(query, [supplier_name, email, phone, address, id], (err) => {
+    const { name, contact_email, phone_number, address } = req.body;
+    const query = `UPDATE suppliers 
+                   SET name = ?, contact_email = ?, phone_number = ?, address = ? 
+                   WHERE supplier_id = ?`;
+    db.query(query, [name, contact_email, phone_number, address, id], (err) => {
         if (err) {
             res.status(500).send('Error updating supplier.');
         } else {
@@ -63,7 +65,7 @@ app.put('/suppliers/:id', verifyToken, isAdmin, (req, res) => {
 // Delete a supplier
 app.delete('/suppliers/:id', verifyToken, isAdmin, (req, res) => {
     const { id } = req.params;
-    const query = `DELETE FROM Suppliers WHERE supplier_id = ?`;
+    const query = `DELETE FROM suppliers WHERE supplier_id = ?`;
     db.query(query, [id], (err) => {
         if (err) {
             res.status(500).send('Error deleting supplier.');
@@ -72,5 +74,4 @@ app.delete('/suppliers/:id', verifyToken, isAdmin, (req, res) => {
         }
     });
 });
-
 
