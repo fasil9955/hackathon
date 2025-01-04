@@ -1,24 +1,26 @@
-const db = require('../db'); // Assuming your DB connection is in the db.js file
+const db = require('../config/db'); // Assuming your DB connection is in the config/db.js file
 
-// Fetch all suppliers
+// Get all suppliers
 exports.getAllSuppliers = (req, res) => {
-    const query = 'SELECT * FROM suppliers';
+    const query = 'SELECT * FROM suppliers';  // Query to fetch all suppliers
+
     db.query(query, (err, results) => {
         if (err) {
+            console.error('Error fetching suppliers:', err.message);
             return res.status(500).send('Error fetching suppliers.');
         }
-        res.json(results);
+        res.json(results);  // Send the list of suppliers as a JSON response
     });
 };
 
-// Add a new supplier
 exports.addSupplier = (req, res) => {
-    const { supplier_name, contact_email, phone_number, address, user_id } = req.body;
+    const { name, contact_email, phone_number, address } = req.body;
 
     // Check if supplier with the same email already exists
     const checkQuery = 'SELECT * FROM suppliers WHERE contact_email = ?';
     db.query(checkQuery, [contact_email], (err, existingSupplier) => {
         if (err) {
+            console.error('Error checking supplier existence:', err.message);
             return res.status(500).send('Error checking supplier existence.');
         }
 
@@ -28,11 +30,12 @@ exports.addSupplier = (req, res) => {
 
         // Insert new supplier
         const query = `
-            INSERT INTO suppliers (supplier_name, contact_email, phone_number, address, user_id)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO suppliers (name, contact_email, phone_number, address, created_at)
+            VALUES (?, ?, ?, ?, NOW())
         `;
-        db.query(query, [supplier_name, contact_email, phone_number, address, user_id], (err) => {
+        db.query(query, [name, contact_email, phone_number, address], (err) => {
             if (err) {
+                console.error('Error adding supplier:', err.message);
                 return res.status(500).send('Error adding supplier.');
             }
             res.send('Supplier added successfully.');
@@ -40,15 +43,17 @@ exports.addSupplier = (req, res) => {
     });
 };
 
-// Update a supplier by ID
+
+// Update an existing supplier
 exports.updateSupplier = (req, res) => {
-    const { id } = req.params;
+    const { supplier_id } = req.params;
     const { supplier_name, contact_email, phone_number, address } = req.body;
 
     // Check if supplier with the same email exists but not the current supplier
     const checkQuery = 'SELECT * FROM suppliers WHERE contact_email = ? AND supplier_id != ?';
-    db.query(checkQuery, [contact_email, id], (err, existingSupplier) => {
+    db.query(checkQuery, [contact_email, supplier_id], (err, existingSupplier) => {
         if (err) {
+            console.error('Error checking supplier existence:', err.message);
             return res.status(500).send('Error checking supplier existence.');
         }
 
@@ -62,8 +67,9 @@ exports.updateSupplier = (req, res) => {
             SET supplier_name = ?, contact_email = ?, phone_number = ?, address = ?
             WHERE supplier_id = ?
         `;
-        db.query(query, [supplier_name, contact_email, phone_number, address, id], (err) => {
+        db.query(query, [supplier_name, contact_email, phone_number, address, supplier_id], (err) => {
             if (err) {
+                console.error('Error updating supplier:', err.message);
                 return res.status(500).send('Error updating supplier.');
             }
             res.send('Supplier updated successfully.');
@@ -71,15 +77,22 @@ exports.updateSupplier = (req, res) => {
     });
 };
 
-// Delete a supplier by ID
+// Delete a supplier
 exports.deleteSupplier = (req, res) => {
-    const { id } = req.params;
+    const { supplier_id } = req.params;
 
-    const query = 'DELETE FROM suppliers WHERE supplier_id = ?';
-    db.query(query, [id], (err) => {
+    const query = 'DELETE FROM suppliers WHERE supplier_id = ?';  // Query to delete a supplier by ID
+
+    db.query(query, [supplier_id], (err, results) => {
         if (err) {
+            console.error('Error deleting supplier:', err.message);
             return res.status(500).send('Error deleting supplier.');
         }
+
+        if (results.affectedRows === 0) {
+            return res.status(404).send('Supplier not found.');
+        }
+
         res.send('Supplier deleted successfully.');
     });
 };
